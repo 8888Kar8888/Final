@@ -29,11 +29,9 @@ public class ScreenshotListener extends TestListenerAdapter {
     }
 
     private void captureScreenshot(String methodName) {
-        // Create a directory to store the screenshots if it doesn't exist
         String desktopDirPath = System.getProperty("user.home") + File.separator + "Desktop" + File.separator;
         createDirectoryIfNotExists(desktopDirPath);
 
-        // Capture screenshot and save it to the directory
         File screenshotFile = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
         String timestamp = getCurrentTimestamp();
         String screenshotPath = desktopDirPath + methodName + "_" + timestamp + ".png";

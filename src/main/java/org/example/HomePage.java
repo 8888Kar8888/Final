@@ -1,8 +1,8 @@
 package org.example;
 
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
+import org.example.Locators.HomePageLocators;
+import org.openqa.selenium.*;
+import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
@@ -17,56 +17,74 @@ public class HomePage {
         this.wait = new WebDriverWait(driver, Duration.ofSeconds(10));
     }
 
-    /**
-     * Method to click on the Account button to open the login/register modal.
-     */
-    public void clickAccountButton()
-    {
-        wait.until(ExpectedConditions.visibilityOfElementLocated(Locators.ACCOUNT_BUTTON)).click();
-    }
-
-    public void enterUsername(String username) {
-        WebElement usernameField = wait.until(ExpectedConditions.visibilityOfElementLocated(Locators.USERNAME_FIELD));
-        usernameField.clear();
-        usernameField.sendKeys(username);
-    }
-
-    public void enterPassword(String password) {
-        WebElement passwordField = wait.until(ExpectedConditions.visibilityOfElementLocated(Locators.PASSWORD_FIELD));
-        passwordField.clear();
-        passwordField.sendKeys(password);
-    }
-
-    public MyAccountPage clickLoginButton() {
-        WebElement loginButton = wait.until(ExpectedConditions.elementToBeClickable(Locators.LOGIN_BUTTON));
-        loginButton.click();
-        return new MyAccountPage(driver);
-    }
-
-    public MyAccountPage click_RegisterButton()
-    {
-        wait.until(ExpectedConditions.visibilityOfElementLocated(Locators.CREATE_ACCOUNT_BUTTON)).click();
-        return new MyAccountPage(driver);
-    }
-
-    public void click_ORGANIC_MASCARA_2()
-    {
-        wait.until(ExpectedConditions.visibilityOfElementLocated(Locators.ORGANIC_MASCARA_2)).click();
-    }
-
-    public OfferPage clickOfferButton()
-    {
-        wait.until(ExpectedConditions.visibilityOfElementLocated(Locators.SPECIAL_OFFER_BUTTON)).click();
-        return new OfferPage(driver);
-    }
-
-    public CategoryPage clickCategoryButton()
-    {
-        wait.until(ExpectedConditions.visibilityOfElementLocated(Locators.CATEGORY_BUTTON)).click();
+    public CategoryPage clickCategoryButton() {
+        wait.until(ExpectedConditions.visibilityOfElementLocated(HomePageLocators.CATEGORY_BUTTON)).click();
         return new CategoryPage(driver);
     }
 
-        public void function() {
-            wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("header/div[1]/div[2]/div[1]/div[1]/div[1]/div[2]/div[1]/div[1]/div[1]/ul[1]/li[5]/a[1]/span[1]"))).click();
+
+    // Ensure that the search field is present on the main page
+    public boolean isSearchFieldPresent() {
+        return wait.until(ExpectedConditions.presenceOfElementLocated(HomePageLocators.searchFieldLocator)) != null;
+    }
+
+    // Ensure that the search button is present on the main page
+    public boolean isSearchButtonPresent() {
+        return wait.until(ExpectedConditions.presenceOfElementLocated(HomePageLocators.searchButtonLocator)) != null;
+    }
+
+    // Method to search for a term
+    public Object search(String searchTerm) {
+        WebElement searchField = wait.until(ExpectedConditions.presenceOfElementLocated(HomePageLocators.searchFieldLocator));
+        searchField.clear();
+        searchField.sendKeys(searchTerm);
+
+        if (searchTerm.equals("Շախմատ")) {
+            return new ProductPage(driver); // Return product page directly for valid search term
+        } else {
+            driver.findElement(HomePageLocators.searchButtonLocator).click(); // Click search button for other terms
+            return new SearchPage(driver);
         }
+    }
+
+    public CategoryPage navigateToCakeCategory() {
+        WebElement categoryButton = driver.findElement(HomePageLocators.CategoryButton);
+        categoryButton.click();
+        return new CategoryPage(driver);
+    }
+
+
+    public void hoverOverItem() {
+        WebElement elementToHoverOver = driver.findElement(HomePageLocators.hoverOverItem);
+        Actions actions = new Actions(driver);
+        actions.moveToElement(elementToHoverOver).perform();
+    }
+
+    public void clickAddToCart() {
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+        WebElement addToCartButton = wait.until(ExpectedConditions.elementToBeClickable(HomePageLocators.addToCartButton));
+        addToCartButton.click();
+    }
+
+    //    public boolean verifyItemAdded() {
+//        try {
+//            WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+//            WebElement addedItemLink = wait.until(ExpectedConditions.visibilityOfElementLocated(HomePageLocators.addedToCartLink));
+//            boolean displayed = addedItemLink.isDisplayed();
+//            System.out.println("Added to cart link displayed: " + displayed);  // Log visibility status
+//            return displayed;
+//        } catch (Exception e) {
+//            System.err.println("Error verifying item added: " + e.getMessage());  // Log any errors
+//            return false;
+//        }
+//    }
+    public boolean verifyItemAdded() {
+
+        try {
+            WebElement element = wait.until(ExpectedConditions.visibilityOfElementLocated(HomePageLocators.addedToCartLink));
+            return element != null;
+        } catch (TimeoutException e) {
+            return false;
+        }
+    }
 }

@@ -6,7 +6,7 @@ import org.testng.annotations.BeforeClass;
 
 public class BaseTest {
 
-    private WebDriver driver;
+    protected WebDriver driver;
     protected HomePage homePage;
     private ScreenshotListener screenshotListener; // Declare the ScreenshotListener instance
 
